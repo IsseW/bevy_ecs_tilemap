@@ -170,6 +170,10 @@ impl SpecializedRenderPipeline for TilemapPipeline {
         #[cfg(feature = "atlas")]
         shader_defs.push("ATLAS".into());
 
+
+        #[cfg(feature = "lights")]
+        shader_defs.push("LIGHTS".into());
+
         let mesh_string = match key.map_type {
             TilemapType::Square { .. } => "SQUARE",
             TilemapType::Isometric(coord_system) => match coord_system {
