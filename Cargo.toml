@@ -13,6 +13,7 @@ exclude = ["assets/*", "screenshots/*"]
 default = ["render"]
 atlas = []
 render = []
+lights = []
 
 [dependencies]
 bevy = { version = "0.10", default-features = false, features = [

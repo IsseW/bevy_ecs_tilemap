@@ -31,12 +31,24 @@ fn fragment(in: VertexOutput) -> @location(0) vec4<f32> {
     if (color.a < 0.001) {
         discard;
     }
-    return color;
     #else
     let color = textureSample(sprite_texture, sprite_sampler, in.uv.xy, in.tile_id) * in.color;
     if (color.a < 0.001) {
         discard;
     }
-    return color;
     #endif
+
+    #ifdef LIGHTS
+    var light = lights.sky_light;
+    for (var i = u32(0); i < min(lights.point_light_count, 256); i += 1) {
+        let d = lights.point_lights[i].pos - in.world_position;
+        let dist = dot(d, d);
+        light += lights.point_lights[i].color * pow((1.0 / dist), lights.point_lights[i].falloff);
+    }
+    let final_color = color * light;
+    #else
+    let final_color = color;
+    #endif
+
+    return final_color;
 }

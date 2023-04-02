@@ -373,6 +373,38 @@ pub fn extract(
     commands.insert_resource(SecondsSinceStartup(time.elapsed_seconds_f64() as f32));
 }
 
+#[cfg(feature = "lights")]
+pub fn extract_light(
+    mut commands: Commands,
+    point_lights: Extract<Query<(&GlobalTransform, &crate::prelude::PointLight2d, &ComputedVisibility)>>,
+    sky_lights: Extract<Query<&crate::prelude::Skylight2d>>,
+) {
+    use bevy::math::Vec3Swizzles;
+
+    use super::lights::{LightsUniformData, PointLight};
+
+    let mut light_uniform = LightsUniformData::default();
+    for (transform, light, visibility) in point_lights.iter() {
+        if !visibility.is_visible() || light_uniform.light_count as usize >= light_uniform.lights.len() {
+            break;
+        }
+        let rgba = light.color.as_rgba_f32();
+        light_uniform.lights[light_uniform.light_count as usize] = PointLight {
+            pos: transform.translation().xy(),
+            color: Vec3::new(rgba[0], rgba[1], rgba[2]) * light.strength,
+            falloff: light.falloff,
+        };
+        light_uniform.light_count += 1;
+    }
+
+    light_uniform.skylight = sky_lights.iter().map(|light| {
+        let rgba = light.color.as_rgba_f32();
+        Vec3::new(rgba[0], rgba[1], rgba[2]) * light.strength
+    }).sum();
+
+    commands.insert_resource(light_uniform);
+}
+
 pub fn extract_removal(
     mut commands: Commands,
     removed_tiles_query: Extract<Query<&RemovedTileEntity>>,

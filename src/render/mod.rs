@@ -42,6 +42,9 @@ mod queue;
 #[cfg(not(feature = "atlas"))]
 mod texture_array_cache;
 
+#[cfg(feature = "lights")]
+mod lights;
+
 #[cfg(not(feature = "atlas"))]
 use self::extract::ExtractedTilemapTexture;
 #[cfg(not(feature = "atlas"))]
@@ -254,6 +257,9 @@ impl Plugin for TilemapRenderingPlugin {
             .init_resource::<SpecializedRenderPipelines<TilemapPipeline>>()
             .init_resource::<MeshUniformResource>()
             .init_resource::<TilemapUniformResource>();
+            
+        #[cfg(feature = "lights")]
+        render_app.add_system(extract::extract_light.in_schedule(ExtractSchedule)).init_resource::<prepare::LightsUniformResource>();
 
         render_app.add_render_command::<Transparent2d, DrawTilemap>();
 

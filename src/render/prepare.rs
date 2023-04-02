@@ -33,6 +33,10 @@ pub struct MeshUniformResource(pub DynamicUniformBuffer<MeshUniform>);
 #[derive(Resource, Default)]
 pub struct TilemapUniformResource(pub DynamicUniformBuffer<TilemapUniformData>);
 
+#[cfg(feature = "lights")]
+#[derive(Resource, Default)]
+pub struct LightsUniformResource(pub bevy::render::render_resource::UniformBuffer<super::lights::LightsUniformData>);
+
 #[derive(ShaderType, Component, Clone)]
 pub struct MeshUniform {
     pub transform: Mat4,
@@ -64,7 +68,18 @@ pub(crate) fn prepare(
     render_device: Res<RenderDevice>,
     render_queue: Res<RenderQueue>,
     seconds_since_startup: Res<SecondsSinceStartup>,
+    #[cfg(feature = "lights")]
+    mut lights_uniform: ResMut<LightsUniformResource>,
+    #[cfg(feature = "lights")]
+    lights_resource: Res<super::lights::LightsUniformData>,
 ) {
+
+    #[cfg(feature = "lights")]
+    {
+        *lights_uniform.0.get_mut() = lights_resource.clone();
+        lights_uniform.0.write_buffer(&render_device, &render_queue);
+    }
+
     for tile in extracted_tiles.iter() {
         // First if the tile position has changed remove the tile from the old location.
         if tile.position != tile.old_position.0 {

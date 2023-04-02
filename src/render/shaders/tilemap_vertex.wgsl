@@ -134,5 +134,10 @@ fn vertex(vertex_input: VertexInput) -> VertexOutput {
     // out.uv = out.uv + 1e-5;
     out.position = view.view_proj * mesh_data.world_position;
     out.color = vertex_input.color;
+
+    #ifdef LIGHTS
+    out.world_position = mesh_data.world_position;
+    #endif
+
     return out;
 }

@@ -21,6 +21,23 @@ struct TilemapData {
 @group(2) @binding(0)
 var<uniform> tilemap_data: TilemapData;
 
+#ifdef LIGHTS
+struct Light {
+    pos: vec2<f32>,
+    color: vec3<f32>,
+    falloff: f32,
+};
+
+struct Lights {
+    sky_light: vec3<f32>,
+    point_light_count: u32,
+    point_lights: array<Light, 256u>,
+};
+
+@group(2) @binding(1)
+var<uniform> lights: Lights;
+#endif
+
 struct VertexInput {
     @builtin(vertex_index) v_index: u32,
     @location(0) uv: vec4<f32>,

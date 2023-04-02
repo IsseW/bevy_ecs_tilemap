@@ -68,7 +68,10 @@ pub fn queue_tilemap_bind_group(
     tilemap_pipeline: Res<TilemapPipeline>,
     render_device: Res<RenderDevice>,
     tilemap_uniforms: Res<TilemapUniformResource>,
+    #[cfg(feature = "lights")]
+    lights_uniform: Res<super::prepare::LightsUniformResource>,
 ) {
+    #[cfg(not(feature = "lights"))]
     if let Some(binding) = tilemap_uniforms.0.binding() {
         commands.insert_resource(TilemapUniformDataBindGroup {
             value: render_device.create_bind_group(&BindGroupDescriptor {
@@ -76,6 +79,25 @@ pub fn queue_tilemap_bind_group(
                     binding: 0,
                     resource: binding,
                 }],
+                label: Some("tilemap_bind_group"),
+                layout: &tilemap_pipeline.uniform_layout,
+            }),
+        });
+    }
+    #[cfg(feature = "lights")]
+    if let Some((tilemap_binding, lights_binding)) = tilemap_uniforms.0.binding().zip(lights_uniform.0.binding()) {
+        commands.insert_resource(TilemapUniformDataBindGroup {
+            value: render_device.create_bind_group(&BindGroupDescriptor {
+                entries: &[
+                    BindGroupEntry {
+                        binding: 0,
+                        resource: tilemap_binding,
+                    },
+                    BindGroupEntry {
+                        binding: 1,
+                        resource: lights_binding,
+                    },
+                ],
                 label: Some("tilemap_bind_group"),
                 layout: &tilemap_pipeline.uniform_layout,
             }),

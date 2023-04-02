@@ -22,7 +22,7 @@ use map::{
     TilemapGridSize, TilemapSize, TilemapSpacing, TilemapTexture, TilemapTextureSize,
     TilemapTileSize, TilemapType,
 };
-use prelude::TilemapId;
+use prelude::{TilemapId};
 use tiles::{
     AnimatedTile, TileColor, TileFlip, TilePos, TilePosOld, TileStorage, TileTextureIndex,
     TileVisible,
@@ -45,6 +45,7 @@ pub mod map;
 pub(crate) mod render;
 /// A module which contains tile components.
 pub mod tiles;
+pub mod lights;
 
 /// A bevy tilemap plugin. This must be included in order for everything to be rendered.
 /// But is not necessary if you are running without a renderer.
@@ -63,6 +64,10 @@ impl Plugin for TilemapPlugin {
             let render_app = app.sub_app_mut(RenderApp);
             render_app.add_system(array_texture_preload::extract.in_schedule(ExtractSchedule));
         }
+
+        #[cfg(feature = "lights")]
+        app.register_type::<prelude::PointLight2d>()
+            .register_type::<prelude::Skylight2d>();
 
         app.register_type::<FrustumCulling>()
             .register_type::<TilemapId>()
@@ -129,6 +134,7 @@ pub mod prelude {
     pub use crate::helpers::transform::*;
     pub use crate::map::*;
     pub use crate::tiles::*;
+    pub use crate::lights::*;
     pub use crate::TilemapBundle;
     pub use crate::TilemapPlugin;
 }

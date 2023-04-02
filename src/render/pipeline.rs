@@ -84,8 +84,20 @@ impl FromWorld for TilemapPipeline {
                     min_binding_size: Some(TilemapUniformData::min_size()),
                 },
                 count: None,
-            }],
-            label: Some("tilemap_material_layout"),
+            },
+            #[cfg(feature = "lights")]
+            BindGroupLayoutEntry {
+                binding: 1,
+                visibility: ShaderStages::FRAGMENT,
+                ty: BindingType::Buffer {
+                    ty: BufferBindingType::Uniform,
+                    has_dynamic_offset: false,
+                    min_binding_size: Some(super::lights::LightsUniformData::min_size()),
+                },
+                count: None,
+            },
+            ],
+            label: Some("lights_layout"),
         });
 
         #[cfg(not(feature = "atlas"))]
