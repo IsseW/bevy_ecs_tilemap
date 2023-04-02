@@ -42,7 +42,7 @@ pub mod helpers;
 /// A module which contains tilemap components.
 pub mod map;
 #[cfg(feature = "render")]
-pub(crate) mod render;
+pub mod render;
 /// A module which contains tile components.
 pub mod tiles;
 pub mod lights;

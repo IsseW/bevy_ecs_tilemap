@@ -36,14 +36,14 @@ mod draw;
 mod extract;
 mod include_shader;
 mod pipeline;
-pub(crate) mod prepare;
+pub mod prepare;
 mod queue;
 
 #[cfg(not(feature = "atlas"))]
 mod texture_array_cache;
 
 #[cfg(feature = "lights")]
-mod lights;
+pub mod lights;
 
 #[cfg(not(feature = "atlas"))]
 use self::extract::ExtractedTilemapTexture;
